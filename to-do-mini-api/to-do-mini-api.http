@@ -1,0 +1,17 @@
+﻿@to-do-mini-api_HostAddress = http://localhost:5202
+
+POST {{to-do-mini-api_HostAddress}}/baixium/usuarios
+Content-Type: application/json
+
+{
+  "nome":"walk cat",
+  "email":"walk@gmail.com",
+  "password":"123",
+  "adm":true
+}
+
+###
+
+GET {{to-do-mini-api_HostAddress}}/todoitems
+
+###
