@@ -97,6 +97,7 @@ baixiumItems.MapPut("/artigos/{id}", async (int id, Artigo inputArtigo, BaixumDB
 
     artigo.Titulo = inputArtigo.Titulo;
     artigo.Conteudo = inputArtigo.Conteudo;
+    artigo.Validado = inputArtigo.Validado;
     artigo.Autor = inputArtigo.Autor;
     artigo.Tema = inputArtigo.Tema;
 
