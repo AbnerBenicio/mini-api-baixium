@@ -6,7 +6,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 //Criando base de dados
 builder.Services.AddDbContext<BaixumDB>(opt => opt
-    .UseLazyLoadingProxies() // Habilita o uso de proxies
     .UseInMemoryDatabase("TodoList"));
 
 //Habilitando endpointa
@@ -97,13 +96,21 @@ baixiumItems.MapDelete("/usuarios/{id}", async (string id, BaixumDB db) =>
 });
 
 baixiumItems.MapGet("/artigos", async (BaixumDB db) =>
-    await db.Artigos.ToListAsync());
+    await db.Artigos
+        .Include(a => a.Autor) // Carregamento antecipado do Autor
+        .Include(a => a.Tema) // Carregamento antecipado do Tema
+        .ToListAsync());
 
 baixiumItems.MapGet("/artigos/{id}", async (Guid id, BaixumDB db) =>
-    await db.Artigos.FindAsync(id)
-        is Artigo artigo
-            ? Results.Ok(artigo)
-            : Results.NotFound());
+{
+#pragma warning disable CS8600 // Conversão de literal nula ou possível valor nulo em tipo não anulável.
+    Artigo artigo = await db.Artigos
+        .Include(a => a.Autor) // Carregamento antecipado do Autor
+        .Include(a => a.Tema) // Carregamento antecipado do Tema
+        .FirstOrDefaultAsync(a => a.Id == id);
+
+    return artigo is null ? Results.NotFound() : Results.Ok(artigo);
+});
 
 baixiumItems.MapPost("/artigos", async (Artigo artigo, BaixumDB db) =>
 {

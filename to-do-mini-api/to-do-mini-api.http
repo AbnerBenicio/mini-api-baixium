@@ -23,14 +23,14 @@ Content-Type: application/json
   "conteudo":"walk@gmail.com",
   "validado":true,
   "autor": {
-    "id": "466993c5-8c30-4093-b668-8981c46b4931", 
+    "id": "74ffde50-c07d-4e6b-9f9b-98114e758c43", 
     "nome": "walk cat",
     "email": "walk@gmail.com",
     "password": "123",
     "adm": true
   },
   "tema": {
-    "id": "8af1fcf3-e484-4c7a-af9d-f9ebbb514bfb",
+    "id": "a305290f-1e18-4e9f-8e46-aa246ac3e0ea",
     "tipo": "matematica",
     "titulo": "Matemática"
   }
