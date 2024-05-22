@@ -103,13 +103,12 @@ baixiumItems.MapGet("/artigos", async (BaixumDB db) =>
 
 baixiumItems.MapGet("/artigos/{id}", async (Guid id, BaixumDB db) =>
 {
-#pragma warning disable CS8600 // Conversão de literal nula ou possível valor nulo em tipo não anulável.
     Artigo artigo = await db.Artigos
         .Include(a => a.Autor) // Carregamento antecipado do Autor
         .Include(a => a.Tema) // Carregamento antecipado do Tema
-        .FirstOrDefaultAsync(a => a.Id == id);
+        .FirstOrDefaultAsync(a => a.Id == id) ?? new Artigo();
 
-    return artigo is null ? Results.NotFound() : Results.Ok(artigo);
+    return artigo.Id == default ? Results.NotFound() : Results.Ok(artigo);
 });
 
 baixiumItems.MapPost("/artigos", async (Artigo artigo, BaixumDB db) =>
