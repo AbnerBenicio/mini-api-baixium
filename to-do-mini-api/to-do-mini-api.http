@@ -1,5 +1,7 @@
 ﻿@to-do-mini-api_HostAddress = http://localhost:5202
+//Obs: alterar os ids de tema e autor para qualquer um que for gerado ao fazer as requisições de post em usuários e em temas
 
+//Requisição POST de Usuário
 POST {{to-do-mini-api_HostAddress}}/baixium/usuarios
 Content-Type: application/json
 
@@ -12,6 +14,42 @@ Content-Type: application/json
 
 ###
 
+//Requisição POST de Artigo
+POST {{to-do-mini-api_HostAddress}}/baixium/artigos
+Content-Type: application/json
+
+{
+  "titulo":"walk cat",
+  "conteudo":"walk@gmail.com",
+  "validado":true,
+  "autor": {
+    "id": "466993c5-8c30-4093-b668-8981c46b4931", 
+    "nome": "walk cat",
+    "email": "walk@gmail.com",
+    "password": "123",
+    "adm": true
+  },
+  "tema": {
+    "id": "8af1fcf3-e484-4c7a-af9d-f9ebbb514bfb",
+    "tipo": "matematica",
+    "titulo": "Matemática"
+  }
+}
+
+###
+
+//Requsição POST de Tema
+POST {{to-do-mini-api_HostAddress}}/baixium/temas
+Content-Type: application/json
+
+{
+  "tipo":"matematica",
+  "titulo":"Matemática"
+}
+
+###
+
+//Requisição GET de Usuários
 GET {{to-do-mini-api_HostAddress}}/baixium/usuarios
 
 ###

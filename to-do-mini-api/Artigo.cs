@@ -6,7 +6,7 @@
         public string Titulo { get; set; }
         public string Conteudo { get; set; }
         public bool Validado { get; set; }
-        public Usuario Autor { get; set; }
-        public Tema Tema { get; set; }
+        public virtual Usuario Autor { get; set; }
+        public virtual Tema Tema { get; set; }
     }
 }

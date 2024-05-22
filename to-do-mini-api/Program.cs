@@ -1,12 +1,36 @@
 using Microsoft.EntityFrameworkCore;
 using to_do_mini_api;
 
+
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDbContext<BaixumDB>(opt => opt.UseInMemoryDatabase("TodoList"));
+
+//Criando base de dados
+builder.Services.AddDbContext<BaixumDB>(opt => opt
+    .UseLazyLoadingProxies() // Habilita o uso de proxies
+    .UseInMemoryDatabase("TodoList"));
+
+//Habilitando endpointa
 builder.Services.AddEndpointsApiExplorer();
+
+//Habilitando uso do swagger
 builder.Services.AddSwaggerGen();
 
+//Habilitando acesso à api
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowMyOrigin",
+        builder => builder.WithOrigins("http://localhost:5173")
+                           .AllowAnyHeader()
+                           .AllowAnyMethod());
+});
+
 var app = builder.Build();
+
+//Permitindo acesso à api
+app.UseCors(policy =>
+    policy.WithOrigins("http://localhost:5173")
+    .AllowAnyMethod()
+    .AllowAnyHeader());
 
 if (app.Environment.IsDevelopment())
 {
@@ -15,9 +39,6 @@ if (app.Environment.IsDevelopment())
 }
 
 var baixiumItems = app.MapGroup("/baixium");
-
-baixiumItems.MapGet("/usuarios", async (BaixumDB db) =>
-    await db.Usuarios.ToListAsync());
 
 app.Use(async (context, next) =>
 {
@@ -30,7 +51,10 @@ app.Use(async (context, next) =>
     await next();
 });
 
-baixiumItems.MapGet("/usuarios/{id}", async (int id, BaixumDB db) =>
+baixiumItems.MapGet("/usuarios", async (BaixumDB db) =>
+    await db.Usuarios.ToListAsync());
+
+baixiumItems.MapGet("/usuarios/{id}", async (string id, BaixumDB db) =>
     await db.Usuarios.FindAsync(id)
         is Usuario user
             ? Results.Ok(user)
@@ -44,7 +68,7 @@ baixiumItems.MapPost("/usuarios", async (Usuario user, BaixumDB db) =>
     return Results.Created($"/usuarios/{user.Id}", user);
 });
 
-baixiumItems.MapPut("/usuarios/{id}", async (int id, Usuario inputUser, BaixumDB db) =>
+baixiumItems.MapPut("/usuarios/{id}", async (string id, Usuario inputUser, BaixumDB db) =>
 {
     var user = await db.Usuarios.FindAsync(id);
 
@@ -60,7 +84,7 @@ baixiumItems.MapPut("/usuarios/{id}", async (int id, Usuario inputUser, BaixumDB
     return Results.NoContent();
 });
 
-baixiumItems.MapDelete("/usuarios/{id}", async (int id, BaixumDB db) =>
+baixiumItems.MapDelete("/usuarios/{id}", async (string id, BaixumDB db) =>
 {
     if (await db.Usuarios.FindAsync(id) is Usuario user)
     {
@@ -75,7 +99,7 @@ baixiumItems.MapDelete("/usuarios/{id}", async (int id, BaixumDB db) =>
 baixiumItems.MapGet("/artigos", async (BaixumDB db) =>
     await db.Artigos.ToListAsync());
 
-baixiumItems.MapGet("/artigos/{id}", async (int id, BaixumDB db) =>
+baixiumItems.MapGet("/artigos/{id}", async (Guid id, BaixumDB db) =>
     await db.Artigos.FindAsync(id)
         is Artigo artigo
             ? Results.Ok(artigo)
@@ -83,13 +107,31 @@ baixiumItems.MapGet("/artigos/{id}", async (int id, BaixumDB db) =>
 
 baixiumItems.MapPost("/artigos", async (Artigo artigo, BaixumDB db) =>
 {
+    // Busca o usuário e o tema no banco de dados
+    Usuario usuarioExistente = await db.Usuarios.FindAsync(artigo.Autor.Id);
+    Tema temaExistente = await db.Temas.FindAsync(artigo.Tema.Id);
+
+    if (usuarioExistente == null || temaExistente == null)
+    {
+        // Se o usuário ou o tema não existirem, retorna um erro
+        return Results.BadRequest("Usuário ou Tema não existem");
+    }
+    else
+    {
+        // Se o usuário e o tema existirem, associa o artigo a eles
+        artigo.Autor = usuarioExistente;
+        artigo.Tema = temaExistente;
+    }
+
+    // Adiciona o artigo ao banco de dados
     db.Artigos.Add(artigo);
     await db.SaveChangesAsync();
 
     return Results.Created($"/artigos/{artigo.Id}", artigo);
 });
 
-baixiumItems.MapPut("/artigos/{id}", async (int id, Artigo inputArtigo, BaixumDB db) =>
+
+baixiumItems.MapPut("/artigos/{id}", async (string id, Artigo inputArtigo, BaixumDB db) =>
 {
     var artigo = await db.Artigos.FindAsync(id);
 
@@ -106,7 +148,7 @@ baixiumItems.MapPut("/artigos/{id}", async (int id, Artigo inputArtigo, BaixumDB
     return Results.NoContent();
 });
 
-baixiumItems.MapDelete("/{id}", async (int id, BaixumDB db) =>
+baixiumItems.MapDelete("/{id}", async (string id, BaixumDB db) =>
 {
     if (await db.Artigos.FindAsync(id) is Artigo artigo)
     {
@@ -116,6 +158,14 @@ baixiumItems.MapDelete("/{id}", async (int id, BaixumDB db) =>
     }
 
     return Results.NotFound();
+});
+
+baixiumItems.MapPost("/temas", async (Tema tema, BaixumDB db) =>
+{
+    db.Temas.Add(tema);
+    await db.SaveChangesAsync();
+
+    return Results.Created($"/temas/{tema.Id}", tema);
 });
 
 baixiumItems.MapGet("/temas", async (BaixumDB db) =>
