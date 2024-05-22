@@ -2,7 +2,7 @@
 {
     public class Tema
     {
-        public string Id { get; set; }
+        public Guid Id { get; set; }
         public string Tipo { get; set; }
         public string Titulo { get; set; }
     }

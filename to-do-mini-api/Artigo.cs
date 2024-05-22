@@ -2,7 +2,7 @@
 {
     public class Artigo
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         public string Titulo { get; set; }
         public string Conteudo { get; set; }
         public Usuario Autor { get; set; }
