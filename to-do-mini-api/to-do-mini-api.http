@@ -12,6 +12,6 @@ Content-Type: application/json
 
 ###
 
-GET {{to-do-mini-api_HostAddress}}/todoitems
+GET {{to-do-mini-api_HostAddress}}/baixium/usuarios
 
 ###
