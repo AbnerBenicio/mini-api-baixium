@@ -6,10 +6,10 @@ POST {{to-do-mini-api_HostAddress}}/baixium/usuarios
 Content-Type: application/json
 
 {
-  "nome":"walk cat",
-  "email":"walk@gmail.com",
+  "nome":"abner benicio",
+  "email":"abner@gmail.com",
   "password":"123",
-  "adm":true
+  "administrador":true
 }
 
 ###
@@ -23,14 +23,14 @@ Content-Type: application/json
   "conteudo":"walk@gmail.com",
   "validado":true,
   "autor": {
-    "id": "271bd228-bc6e-4dcb-9617-cbfdb136c8a6", 
-    "nome": "walk cat",
-    "email": "walk@gmail.com",
+    "id": "1661095a-e2bd-4a7c-fbae-08dc7fe79d9a",
+    "nome": "abner benicio",
+    "email": "abner@gmail.com",
     "password": "123",
-    "adm": true
+    "administrador": true
   },
   "tema": {
-    "id": "a70dcd78-4858-49a4-a14c-3730d282e927",
+    "id": "57dff3f6-19d6-4f29-8d33-08dc7fe7b857",
     "tipo": "matematica",
     "titulo": "Matemática"
   }
