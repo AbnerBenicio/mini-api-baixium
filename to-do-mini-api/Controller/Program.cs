@@ -6,8 +6,10 @@ using to_do_mini_api.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 //Criando base de dados
-builder.Services.AddDbContext<BaixumDB>(opt => opt
-    .UseInMemoryDatabase("TodoList"));
+builder.Services.AddDbContext<BaixumDB>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("BloggingDatabase"), options => options.EnableRetryOnFailure());
+});
 
 //Habilitando endpointa
 builder.Services.AddEndpointsApiExplorer();
@@ -38,8 +40,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+//Criando grupo
 var baixiumItems = app.MapGroup("/baixium");
 
+//Encaminhando para endpoints da api
 app.Use(async (context, next) =>
 {
     if (context.Request.Path == "/")
@@ -51,49 +55,120 @@ app.Use(async (context, next) =>
     await next();
 });
 
+//Endpoint Get (para todos os usuários)
 baixiumItems.MapGet("/usuarios", async (BaixumDB db) =>
-    await db.Usuarios.ToListAsync());
+{
+    //Instanciando Classe de service
+    AplUsuario UserService = new AplUsuario();
+    //Buscando usuários
+    return Results.Ok(await UserService.BuscarUsuarios(db));
+});
 
-baixiumItems.MapGet("/usuarios/{id}", async (string id, BaixumDB db) =>
-    await db.Usuarios.FindAsync(id)
-        is Usuario user
-            ? Results.Ok(user)
-            : Results.NotFound());
+//Endpoint Get (para usuário específico)
+baixiumItems.MapGet("/usuarios/{id}", async (Guid id, BaixumDB db) =>
+{
+    //Instanciando Classe de service
+    AplUsuario UserService = new AplUsuario();
+    try
+    {
+        //Utilizando service de buscar usuário
+        var usuario = await UserService.BuscarUsuarios(id, db);
+        return Results.Ok(usuario);
+    }
+    catch (ArgumentException ex)
+    {
+        //Retornando erro
+        return Results.NotFound(new { message = ex.Message });
+    }
+});
 
+//Endpoint Post de Usuários
 baixiumItems.MapPost("/usuarios", async (Usuario user, BaixumDB db) =>
 {
+    //Instanciando Classe de service
     AplUsuario UserService = new AplUsuario();
-    user = await UserService.CadastrarUsuario(user, db);
-
-    return Results.Created($"/usuarios/{user.Id}", user);
-});
-
-baixiumItems.MapPut("/usuarios/{id}", async (string id, Usuario inputUser, BaixumDB db) =>
-{
-    var user = await db.Usuarios.FindAsync(id);
-
-    if (user is null) return Results.NotFound();
-
-    user.Nome = inputUser.Nome;
-    user.Email = inputUser.Email;
-    user.Password = inputUser.Password;
-    user.Adm = inputUser.Adm;
-
-    await db.SaveChangesAsync();
-
-    return Results.NoContent();
-});
-
-baixiumItems.MapDelete("/usuarios/{id}", async (string id, BaixumDB db) =>
-{
-    if (await db.Usuarios.FindAsync(id) is Usuario user)
+    try
     {
-        db.Usuarios.Remove(user);
-        await db.SaveChangesAsync();
+        //Utilizando service de cadastrar usuários
+        user = await UserService.CadastrarUsuario(user, db);
+        return Results.Created($"/usuarios/{user.Id}", user);
+    } catch (Exception ex)
+    {
+        //Retornando erro
+        return Results.Problem(ex.Message);
+    }
+});
+
+//Endpoint para login
+baixiumItems.MapPost("/login", async (string password, string email, BaixumDB db) =>
+{
+    //Instanciando Classe de service
+    AplUsuario UserService = new AplUsuario();
+    try
+    {
+        //Utilizando service de login
+        Usuario user = await UserService.Login(password, email, db);
+        return Results.Ok(user);
+    }
+    catch (Exception ex)
+    {
+        //Retornando erro
+        return Results.Problem(ex.Message);
+    }
+});
+
+//Endpoint para recuperar senha
+baixiumItems.MapPost("/recuperar-senha", async (string email, BaixumDB db) =>
+{
+    //Instanciando Classe de service
+    AplUsuario UserService = new AplUsuario();
+    try
+    {
+        //Utilizando service de Recuperar senha
+        Usuario user = await UserService.RecSenha(email, db);
+        return Results.Ok(user);
+    }
+    catch (Exception ex)
+    {
+        //Retornando erro
+        return Results.Problem(ex.Message);
+    }
+});
+
+//Endpoint Put de Usuários
+baixiumItems.MapPut("/usuarios/{id}", async (Guid id, Usuario inputUser, BaixumDB db) =>
+{
+    //Instanciando Classe de service
+    AplUsuario UserService = new AplUsuario();
+
+    try {
+        //Utilizando service de atualizar usuário
+        await UserService.AtualizarUsuario(id, inputUser, db);
         return Results.NoContent();
+    } catch (Exception ex)
+    {
+        //Retornando erro
+        return Results.Problem(ex.Message);
+    }
+});
+
+//Endpoint Delete de Usuários
+baixiumItems.MapDelete("/usuarios/{id}", async (Guid id, BaixumDB db) =>
+{
+    //Instanciando Classe de service
+    AplUsuario UserService = new AplUsuario();
+    //Tentando deletar usuário
+    try
+    {
+        //Utilizando service de exclusão
+        await UserService.DeletarUsuario(id, db);
+        return Results.NoContent();
+    } catch (Exception ex)
+    {
+        //Retornando erro
+        return Results.Problem(ex.Message);
     }
 
-    return Results.NotFound();
 });
 
 baixiumItems.MapGet("/artigos", async (BaixumDB db) =>
@@ -138,7 +213,7 @@ baixiumItems.MapPost("/artigos", async (Artigo artigo, BaixumDB db) =>
 });
 
 
-baixiumItems.MapPut("/artigos/{id}", async (string id, Artigo inputArtigo, BaixumDB db) =>
+baixiumItems.MapPut("/artigos/{id}", async (Guid id, Artigo inputArtigo, BaixumDB db) =>
 {
     var artigo = await db.Artigos.FindAsync(id);
 
@@ -155,7 +230,7 @@ baixiumItems.MapPut("/artigos/{id}", async (string id, Artigo inputArtigo, Baixu
     return Results.NoContent();
 });
 
-baixiumItems.MapDelete("/{id}", async (string id, BaixumDB db) =>
+baixiumItems.MapDelete("/{id}", async (Guid id, BaixumDB db) =>
 {
     if (await db.Artigos.FindAsync(id) is Artigo artigo)
     {
