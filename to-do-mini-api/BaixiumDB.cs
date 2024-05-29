@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using to_do_mini_api;
+using to_do_mini_api.Model;
 
 public class BaixumDB : DbContext
 {

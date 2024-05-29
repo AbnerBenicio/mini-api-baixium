@@ -10,6 +10,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="NovaPasta\NovaPasta\**" />
+    <Content Remove="NovaPasta\NovaPasta\**" />
+    <EmbeddedResource Remove="NovaPasta\NovaPasta\**" />
+    <None Remove="NovaPasta\NovaPasta\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Todo.cs" />
     <Compile Remove="TodoDb.cs" />
   </ItemGroup>
@@ -21,6 +28,10 @@
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.6.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="NovaPasta\" />
   </ItemGroup>
 
 </Project>

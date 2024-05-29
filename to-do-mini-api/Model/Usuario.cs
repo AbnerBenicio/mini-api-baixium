@@ -1,4 +1,4 @@
-﻿namespace to_do_mini_api
+﻿namespace to_do_mini_api.Model
 {
     public class Usuario
     {

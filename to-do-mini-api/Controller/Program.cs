@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using to_do_mini_api;
+using to_do_mini_api.Model;
+using to_do_mini_api.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -61,8 +62,8 @@ baixiumItems.MapGet("/usuarios/{id}", async (string id, BaixumDB db) =>
 
 baixiumItems.MapPost("/usuarios", async (Usuario user, BaixumDB db) =>
 {
-    db.Usuarios.Add(user);
-    await db.SaveChangesAsync();
+    AplUsuario UserService = new AplUsuario();
+    user = await UserService.CadastrarUsuario(user, db);
 
     return Results.Created($"/usuarios/{user.Id}", user);
 });
