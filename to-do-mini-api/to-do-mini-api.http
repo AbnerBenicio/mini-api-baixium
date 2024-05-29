@@ -30,9 +30,9 @@ Content-Type: application/json
     "administrador": true
   },
   "tema": {
-    "id": "57dff3f6-19d6-4f29-8d33-08dc7fe7b857",
-    "tipo": "matematica",
-    "titulo": "Matemática"
+    "id": "24b45fb2-01bd-4dda-d267-08dc7ff43093",
+    "tipo": "programacao",
+    "titulo": "Programação"
   }
 }
 
@@ -43,8 +43,8 @@ POST {{to-do-mini-api_HostAddress}}/baixium/temas
 Content-Type: application/json
 
 {
-  "tipo":"matematica",
-  "titulo":"Matemática"
+  "tipo":"programacao",
+  "titulo":"Programação"
 }
 
 ###
