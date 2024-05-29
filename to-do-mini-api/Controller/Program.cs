@@ -171,11 +171,24 @@ baixiumItems.MapDelete("/usuarios/{id}", async (Guid id, BaixumDB db) =>
 
 });
 
-baixiumItems.MapGet("/artigos", async (BaixumDB db) =>
-    await db.Artigos
-        .Include(a => a.Autor) // Carregamento antecipado do Autor
-        .Include(a => a.Tema) // Carregamento antecipado do Tema
-        .ToListAsync());
+baixiumItems.MapGet("/artigos", async (BaixumDB db, Guid? autorId, Guid? temaId) =>
+{
+    IQueryable<Artigo> query = db.Artigos
+        .Include(a => a.Autor)
+        .Include(a => a.Tema);
+
+    if (autorId != null)
+    {
+        query = query.Where(a => a.Autor.Id == autorId);
+    }
+
+    if (temaId != null)
+    {
+        query = query.Where(a => a.Tema.Id == temaId);
+    }
+
+    return await query.ToListAsync();
+});
 
 baixiumItems.MapGet("/artigos/{id}", async (Guid id, BaixumDB db) =>
 {
