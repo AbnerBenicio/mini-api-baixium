@@ -100,19 +100,19 @@ baixiumItems.MapPost("/usuarios", async (Usuario user, BaixumDB db) =>
 });
 
 //Endpoint para login
-baixiumItems.MapPost("/login", async (string password, string email, BaixumDB db) =>
+baixiumItems.MapPost("/login", async (LoginRequest loginRequest, BaixumDB db) =>
 {
-    //Instanciando Classe de service
+    // Instanciando Classe de service
     AplUsuario UserService = new AplUsuario();
     try
     {
-        //Utilizando service de login
-        Usuario user = await UserService.Login(password, email, db);
+        // Utilizando service de login
+        Usuario user = await UserService.Login(loginRequest.Password, loginRequest.Email, db);
         return Results.Ok(user);
     }
     catch (Exception ex)
     {
-        //Retornando erro
+        // Retornando erro
         return Results.Problem(ex.Message);
     }
 });
