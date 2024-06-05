@@ -9,7 +9,7 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["to-do-mini-api/to-do-mini-api.csproj", "to-do-mini-api/"]
+COPY ["to-do-mini-api/mini-api-baixium.csproj", "to-do-mini-api/"]
 RUN dotnet restore "./to-do-mini-api/to-do-mini-api.csproj"
 COPY . .
 WORKDIR "/src/to-do-mini-api"
