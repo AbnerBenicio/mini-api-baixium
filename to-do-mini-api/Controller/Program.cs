@@ -125,8 +125,8 @@ baixiumItems.MapPost("/recuperar-senha", async (string email, BaixumDB db) =>
     try
     {
         //Utilizando service de Recuperar senha
-        Usuario user = await UserService.RecSenha(email, db);
-        return Results.Ok(user);
+        await UserService.RecSenha(email, db);
+        return Results.Ok("foi");
     }
     catch (Exception ex)
     {

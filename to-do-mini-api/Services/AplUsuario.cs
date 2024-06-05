@@ -1,6 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using to_do_mini_api.Model;
+using SendGrid;
+using SendGrid.Helpers.Mail;
+using System.Text;
 namespace to_do_mini_api.Services
+
 {
     public class AplUsuario
     {
@@ -123,14 +127,27 @@ namespace to_do_mini_api.Services
         }
 
         //Método para recuperar senha
-        public async Task<Usuario> RecSenha(string email, BaixumDB db)
+        public async Task RecSenha(string email, BaixumDB db)
         {
             //Buscando usuário
             Usuario user = await db.Usuarios.FirstOrDefaultAsync(u => u.Email == email);
+             
             if (user != null)
             {
-                //Retornando usuário
-                return user;
+                var novaSenha = user.Nome.Split(" ")[0] + "novaSenha";
+                user.Password = BCrypt.Net.BCrypt.HashPassword(novaSenha);
+
+                await this.AtualizarUsuario(user.Id, user, db);
+
+                var apiKey = "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";
+                var client = new SendGridClient(apiKey);
+                var from = new EmailAddress("baixiumsuporte@gmail.com", "Baixium Suporte");
+                var to = new EmailAddress(user.Email);
+                var subject = "Recuperação de Senha";
+                var plainTextContent = "Olá, " + user.Nome + "!\nVimos que você esqueceu a sua senha.\nSua senha provisória é: " + novaSenha + "\nPedimos para que troque a sua senha o mais rápido possível.";
+                var htmlContent = "<p>Olá, " + user.Nome + "!<br>Vimos que você esqueceu a sua senha.<br>Sua senha provisória é: " + novaSenha + "<br>Pedimos para que troque a sua senha o mais rápido possível. </p>";
+                var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+                var response = await client.SendEmailAsync(msg);
             }
             else
             {
