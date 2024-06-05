@@ -17,17 +17,24 @@ namespace to_do_mini_api.Services
                     //Lançando erro, caso exista
                     throw new ArgumentException("Já existe um usuário cadastrado com esse email.");
                 }
+
+                //Criptografando a senha do usuário
+                user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+
                 //Adicionando usuário ao banco de dados
                 db.Usuarios.Add(user);
                 await db.SaveChangesAsync();
+
                 //Retornando usuário
                 return user;
-            } else
+            }
+            else
             {
                 //Lançando erro, caso tenha campos vazios
                 throw new ArgumentException("Nome, Senha e Email não podem ser vazios.");
             }
         }
+
 
         //Método para exibir usuários
         public async Task<List<Usuario>> BuscarUsuarios(BaixumDB db)
@@ -91,14 +98,14 @@ namespace to_do_mini_api.Services
         }
 
         //Método para login
-        public async Task<Usuario> Login (string password, string email, BaixumDB db)
+        public async Task<Usuario> Login(string password, string email, BaixumDB db)
         {
             //Buscando usuário
             Usuario user = await db.Usuarios.FirstOrDefaultAsync(u => u.Email == email);
             if (user != null)
             {
                 //Verificando se senha é compatível
-                if (user.Password == password)
+                if (BCrypt.Net.BCrypt.Verify(password, user.Password))
                 {
                     return user;
                 }
@@ -107,12 +114,12 @@ namespace to_do_mini_api.Services
                     //Lançando erro, caso senha esteja incorreta
                     throw new ArgumentException("Senha incorreta");
                 }
-            } else
+            }
+            else
             {
                 //Lançando erro caso usuário não exista
                 throw new ArgumentException("Usuário não existe");
             }
-            
         }
 
         //Método para recuperar senha

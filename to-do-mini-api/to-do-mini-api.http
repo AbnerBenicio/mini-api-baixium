@@ -6,9 +6,9 @@ POST {{to-do-mini-api_HostAddress}}/baixium/usuarios
 Content-Type: application/json
 
 {
-  "nome":"abner benicio",
-  "email":"abner@gmail.com",
-  "password":"123",
+  "nome": "Abner Benicio",
+  "email": "abnerbeniciosilva123@gmail.com",
+  "password": "1203",
   "administrador":true
 }
 
