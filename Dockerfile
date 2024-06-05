@@ -10,14 +10,14 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["to-do-mini-api/mini-api-baixium.csproj", "to-do-mini-api/"]
-RUN dotnet restore "./to-do-mini-api/to-do-mini-api.csproj"
+RUN dotnet restore "./to-do-mini-api/mini-api-baixium.csproj"
 COPY . .
 WORKDIR "/src/to-do-mini-api"
 RUN dotnet build "./to-do-mini-api.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./to-do-mini-api.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./mini-api-baixium.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
