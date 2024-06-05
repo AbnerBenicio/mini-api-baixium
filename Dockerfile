@@ -13,7 +13,7 @@ COPY ["to-do-mini-api/mini-api-baixium.csproj", "to-do-mini-api/"]
 RUN dotnet restore "./to-do-mini-api/mini-api-baixium.csproj"
 COPY . .
 WORKDIR "/src/to-do-mini-api"
-RUN dotnet build "./to-do-mini-api.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "./mini-api-baixium.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
@@ -22,4 +22,4 @@ RUN dotnet publish "./mini-api-baixium.csproj" -c $BUILD_CONFIGURATION -o /app/p
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "to-do-mini-api.dll"]
+ENTRYPOINT ["dotnet", "mini-api-baixium.dll"]
