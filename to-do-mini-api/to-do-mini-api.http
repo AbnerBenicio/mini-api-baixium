@@ -7,7 +7,7 @@ Content-Type: application/json
 
 {
   "nome": "Abner Benicio",
-  "email": "abnerbeniciosilva123@gmail.com",
+  "email": "abnerbeniciosilva1234@gmail.com",
   "password": "1203",
   "administrador":true
 }

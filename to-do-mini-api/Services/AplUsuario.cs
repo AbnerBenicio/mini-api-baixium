@@ -2,7 +2,6 @@
 using to_do_mini_api.Model;
 using SendGrid;
 using SendGrid.Helpers.Mail;
-using System.Text;
 namespace to_do_mini_api.Services
 
 {
@@ -24,6 +23,7 @@ namespace to_do_mini_api.Services
 
                 //Criptografando a senha do usuário
                 user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+                
 
                 //Adicionando usuário ao banco de dados
                 db.Usuarios.Add(user);
@@ -74,7 +74,7 @@ namespace to_do_mini_api.Services
                 //Atualizando informações do usuário
                 user.Nome = inputUser.Nome;
                 user.Email = inputUser.Email;
-                user.Password = inputUser.Password;
+                user.Password = BCrypt.Net.BCrypt.HashPassword(inputUser.Password);
                 await db.SaveChangesAsync();
             } else
             {
@@ -139,7 +139,7 @@ namespace to_do_mini_api.Services
 
                 await this.AtualizarUsuario(user.Id, user, db);
 
-                var apiKey = "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";
+                var apiKey = "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";
                 var client = new SendGridClient(apiKey);
                 var from = new EmailAddress("baixiumsuporte@gmail.com", "Baixium Suporte");
                 var to = new EmailAddress(user.Email);

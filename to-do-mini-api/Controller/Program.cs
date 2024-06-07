@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using to_do_mini_api;
 using to_do_mini_api.Model;
 using to_do_mini_api.Services;
 
@@ -8,7 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 //Criando base de dados
 builder.Services.AddDbContext<BaixumDB>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("BloggingDatabase"), options => options.EnableRetryOnFailure());
+    var connectionString = "Server=database-baixum.ccjww5dfpxwu.us-east-1.rds.amazonaws.com;Database=database_baixum;User ID=ArthurCremasco;Password=Bx!99-77;Trusted_Connection=False;TrustServerCertificate=True;";
+    options.UseSqlServer(connectionString, options => options.EnableRetryOnFailure());
 });
 
 //Habilitando endpointa
@@ -118,14 +120,14 @@ baixiumItems.MapPost("/login", async (LoginRequest loginRequest, BaixumDB db) =>
 });
 
 //Endpoint para recuperar senha
-baixiumItems.MapPost("/recuperar-senha", async (string email, BaixumDB db) =>
+baixiumItems.MapPost("/recuperar-senha", async (RecSenha recupera, BaixumDB db) =>
 {
     //Instanciando Classe de service
     AplUsuario UserService = new AplUsuario();
     try
     {
         //Utilizando service de Recuperar senha
-        await UserService.RecSenha(email, db);
+        await UserService.RecSenha(recupera.email, db);
         return Results.Ok("foi");
     }
     catch (Exception ex)

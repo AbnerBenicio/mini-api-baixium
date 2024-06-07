@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using to_do_mini_api.Model;
 
+namespace to_do_mini_api;
 public class BaixumDB : DbContext
 {
     public BaixumDB(DbContextOptions<BaixumDB> options)
