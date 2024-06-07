@@ -9,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 //Criando base de dados
 builder.Services.AddDbContext<BaixumDB>(options =>
 {
-    var connectionString = "Server=database-baixum.ccjww5dfpxwu.us-east-1.rds.amazonaws.com;Database=database_baixum;User ID=ArthurCremasco;Password=Bx!99-77;Trusted_Connection=False;TrustServerCertificate=True;";
+    var connectionString = Environment.GetEnvironmentVariable("STRING_CONNECTION");
     options.UseSqlServer(connectionString, options => options.EnableRetryOnFailure());
 });
 
