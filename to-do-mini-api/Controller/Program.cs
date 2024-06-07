@@ -171,88 +171,75 @@ baixiumItems.MapDelete("/usuarios/{id}", async (Guid id, BaixumDB db) =>
 
 });
 
+
+
+//Controller Artigos
 baixiumItems.MapGet("/artigos", async (BaixumDB db, Guid? autorId, Guid? temaId) =>
 {
-    IQueryable<Artigo> query = db.Artigos
-        .Include(a => a.Autor)
-        .Include(a => a.Tema);
-
-    if (autorId != null)
-    {
-        query = query.Where(a => a.Autor.Id == autorId);
-    }
-
-    if (temaId != null)
-    {
-        query = query.Where(a => a.Tema.Id == temaId);
-    }
-
-    return await query.ToListAsync();
+    AplArtigo ArticleService = new AplArtigo();
+    return Results.Ok(await ArticleService.BuscarArtigos(db, autorId, temaId));
 });
 
-baixiumItems.MapGet("/artigos/{id}", async (Guid id, BaixumDB db) =>
+baixiumItems.MapGet("/artigos/{id}", async (BaixumDB db, Guid id) =>
 {
-    Artigo artigo = await db.Artigos
-        .Include(a => a.Autor) // Carregamento antecipado do Autor
-        .Include(a => a.Tema) // Carregamento antecipado do Tema
-        .FirstOrDefaultAsync(a => a.Id == id) ?? new Artigo();
+    AplArtigo ArticleService = new AplArtigo();
 
-    return artigo.Id == default ? Results.NotFound() : Results.Ok(artigo);
+    try
+    {
+        var artigo = await ArticleService.BuscarArtigos(db, id);
+        return Results.Ok(artigo);
+    }
+    catch (ArgumentException ex)
+    {
+        return Results.NotFound();
+    }
 });
 
 baixiumItems.MapPost("/artigos", async (Artigo artigo, BaixumDB db) =>
 {
-    // Busca o usuário e o tema no banco de dados
-    Usuario usuarioExistente = await db.Usuarios.FindAsync(artigo.Autor.Id);
-    Tema temaExistente = await db.Temas.FindAsync(artigo.Tema.Id);
-
-    if (usuarioExistente == null || temaExistente == null)
+    try
     {
-        // Se o usuário ou o tema não existirem, retorna um erro
-        return Results.BadRequest("Usuário ou Tema não existem");
+        AplArtigo ArticleService = new AplArtigo();
+        await ArticleService.PostarArtigo(artigo, db);
+        return Results.Created($"/artigos/{artigo.Id}", artigo);
     }
-    else
+    catch (Exception ex)
     {
-        // Se o usuário e o tema existirem, associa o artigo a eles
-        artigo.Autor = usuarioExistente;
-        artigo.Tema = temaExistente;
+        return Results.Problem(ex.Message);
     }
-
-    // Adiciona o artigo ao banco de dados
-    db.Artigos.Add(artigo);
-    await db.SaveChangesAsync();
-
-    return Results.Created($"/artigos/{artigo.Id}", artigo);
+   
 });
 
 
 baixiumItems.MapPut("/artigos/{id}", async (Guid id, Artigo inputArtigo, BaixumDB db) =>
 {
-    var artigo = await db.Artigos.FindAsync(id);
+    AplArtigo ArticleService = new AplArtigo();
 
-    if (artigo is null) return Results.NotFound();
-
-    artigo.Titulo = inputArtigo.Titulo;
-    artigo.Conteudo = inputArtigo.Conteudo;
-    artigo.Validado = inputArtigo.Validado;
-    artigo.Autor = inputArtigo.Autor;
-    artigo.Tema = inputArtigo.Tema;
-
-    await db.SaveChangesAsync();
-
-    return Results.NoContent();
+    try
+    {
+        await ArticleService.AtualizarArtigo(id, inputArtigo, db);
+        return Results.NoContent();
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem(ex.Message);
+    }
 });
 
 baixiumItems.MapDelete("/{id}", async (Guid id, BaixumDB db) =>
 {
-    if (await db.Artigos.FindAsync(id) is Artigo artigo)
+    
+    AplArtigo ArticleService = new AplArtigo();
+    
+    try
     {
-        db.Artigos.Remove(artigo);
-        await db.SaveChangesAsync();
+        await ArticleService.DeletarArtigo(id, db);
         return Results.NoContent();
     }
-
-    return Results.NotFound();
+    catch (Exception ex)
+    {
+        return Results.Problem(ex.Message);
+    }
 });
 
 baixiumItems.MapPost("/temas", async (Tema tema, BaixumDB db) =>
