@@ -139,7 +139,7 @@ namespace to_do_mini_api.Services
 
                 await this.AtualizarUsuario(user.Id, user, db);
 
-                var apiKey = "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";
+                var apiKey = Environment.GetEnvironmentVariable("API_EMAIL"); //Criar variável de ambiente depois;
                 var client = new SendGridClient(apiKey);
                 var from = new EmailAddress("baixiumsuporte@gmail.com", "Baixium Suporte");
                 var to = new EmailAddress(user.Email);
