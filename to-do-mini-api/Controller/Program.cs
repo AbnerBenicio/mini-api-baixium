@@ -173,13 +173,17 @@ baixiumItems.MapDelete("/usuarios/{id}", async (Guid id, BaixumDB db) =>
 
 });
 
-
-
 //Controller Artigos
-baixiumItems.MapGet("/artigos", async (BaixumDB db, Guid? autorId, Guid? temaId) =>
+baixiumItems.MapGet("/artigos/validos", async (BaixumDB db, Guid? autorId, Guid? temaId, int page, int limit) =>
 {
     AplArtigo ArticleService = new AplArtigo();
-    return Results.Ok(await ArticleService.BuscarArtigos(db, autorId, temaId));
+    return Results.Ok(await ArticleService.BuscarArtigos(db, true, autorId, temaId, page, limit));
+});
+
+baixiumItems.MapGet("/artigos/invalidos", async (BaixumDB db, Guid? autorId, Guid? temaId, int page, int limit) =>
+{
+    AplArtigo ArticleService = new AplArtigo();
+    return Results.Ok(await ArticleService.BuscarArtigos(db, false, autorId, temaId, page, limit));
 });
 
 baixiumItems.MapGet("/artigos/{id}", async (BaixumDB db, Guid id) =>
@@ -209,7 +213,7 @@ baixiumItems.MapPost("/artigos", async (Artigo artigo, BaixumDB db) =>
     {
         return Results.Problem(ex.Message);
     }
-   
+
 });
 
 
@@ -228,11 +232,11 @@ baixiumItems.MapPut("/artigos/{id}", async (Guid id, Artigo inputArtigo, BaixumD
     }
 });
 
-baixiumItems.MapDelete("/{id}", async (Guid id, BaixumDB db) =>
+baixiumItems.MapDelete("/artigos/{id}", async (Guid id, BaixumDB db) =>
 {
-    
+
     AplArtigo ArticleService = new AplArtigo();
-    
+
     try
     {
         await ArticleService.DeletarArtigo(id, db);

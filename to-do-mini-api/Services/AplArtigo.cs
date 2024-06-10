@@ -40,24 +40,30 @@ namespace to_do_mini_api.Services
             return artigo;
         }
 
-        public async Task<List<Artigo>> BuscarArtigos(BaixumDB db, Guid? autorId, Guid? temaId)
+        public async Task<List<Artigo>> BuscarArtigos(BaixumDB db, bool validado, Guid? autorId, Guid? temaId, int page, int limit)
         {
+
             IQueryable<Artigo> query = db.Artigos
                 .Include(a => a.Autor)
                 .Include(a => a.Tema);
 
-            if (autorId != null)
+            if (autorId != null && autorId != Guid.Empty)
             {
                 query = query.Where(a => a.Autor.Id == autorId);
             }
 
-            if (temaId != null)
+            if (temaId != null && temaId != Guid.Empty)
             {
                 query = query.Where(a => a.Tema.Id == temaId);
             }
 
+            query = query.Where(a => a.Validado == validado);
+
+            query = query.Skip((page - 1) * limit).Take(limit);
+
             return await query.ToListAsync();
         }
+
 
         public async Task AtualizarArtigo(Guid id, Artigo inputArtigo, BaixumDB db)
         {
