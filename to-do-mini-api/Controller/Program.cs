@@ -259,4 +259,4 @@ baixiumItems.MapPost("/temas", async (Tema tema, BaixumDB db) =>
 baixiumItems.MapGet("/temas", async (BaixumDB db) =>
     await db.Temas.ToListAsync());
 
-app.Run();
+await app.RunAsync();
