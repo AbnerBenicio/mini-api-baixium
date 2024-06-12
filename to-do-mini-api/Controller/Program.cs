@@ -263,13 +263,26 @@ baixiumItems.MapDelete("/artigos/{id}", async (Guid id, BaixumDB db) =>
 
 baixiumItems.MapPost("/temas", async (Tema tema, BaixumDB db) =>
 {
-    db.Temas.Add(tema);
-    await db.SaveChangesAsync();
+    AplTemas TemaService = new AplTemas();
+    try
+    {
+        TemaService.PublicarArtigo(tema, db);
+        return Results.Created($"/temas/{tema.Id}", tema);
+        
+    } 
+    catch (Exception ex)
+    {
+        return Results.Problem(ex.Message);
+    }
 
-    return Results.Created($"/temas/{tema.Id}", tema);
+
 });
 
 baixiumItems.MapGet("/temas", async (BaixumDB db) =>
-    await db.Temas.ToListAsync());
-
+{
+    AplTemas TemaService = new AplTemas();
+    return Results.Ok(await TemaService.BuscarTema(db));
+});
+    
+    
 await app.RunAsync();
