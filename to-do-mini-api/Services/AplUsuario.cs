@@ -11,7 +11,7 @@ namespace to_do_mini_api.Services
         public async Task<Usuario> CadastrarUsuario(Usuario user, BaixumDB db)
         {
             //Verificando se todos os campos estão preenchidos
-            if (!string.IsNullOrWhiteSpace(user.Nome) && !string.IsNullOrWhiteSpace(user.Email))
+            if (!string.IsNullOrWhiteSpace(user.Nome) && !string.IsNullOrWhiteSpace(user.Password) && !string.IsNullOrWhiteSpace(user.Email))
             {
                 //Verificando se usuário já existe
                 Usuario existingUser = await db.Usuarios.FirstOrDefaultAsync(u => u.Email == user.Email);
@@ -22,7 +22,7 @@ namespace to_do_mini_api.Services
                 }
 
                 //Criptografando a senha do usuário
-                //user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+                user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
                 
 
                 //Adicionando usuário ao banco de dados
@@ -69,12 +69,12 @@ namespace to_do_mini_api.Services
             //Buscando usuário
             Usuario user = await this.BuscarUsuarios(id, db);
             //Verificando se campos estão preenchidos
-            if (!string.IsNullOrWhiteSpace(inputUser.Nome) && !string.IsNullOrWhiteSpace(inputUser.Email))
+            if (!string.IsNullOrWhiteSpace(inputUser.Nome) && !string.IsNullOrWhiteSpace(inputUser.Password) && !string.IsNullOrWhiteSpace(inputUser.Email))
             {
                 //Atualizando informações do usuário
                 user.Nome = inputUser.Nome;
                 user.Email = inputUser.Email;
-                //user.Password = BCrypt.Net.BCrypt.HashPassword(inputUser.Password);
+                user.Password = BCrypt.Net.BCrypt.HashPassword(inputUser.Password);
                 await db.SaveChangesAsync();
             } else
             {
@@ -102,6 +102,29 @@ namespace to_do_mini_api.Services
         }
 
         //Método para login
+        public async Task<Usuario> Login(string password, string email, BaixumDB db)
+        {
+            //Buscando usuário
+            Usuario user = await db.Usuarios.FirstOrDefaultAsync(u => u.Email == email);
+            if (user != null)
+            {
+                //Verificando se senha é compatível
+                if (BCrypt.Net.BCrypt.Verify(password, user.Password))
+                {
+                    return user;
+                }
+                else
+                {
+                    //Lançando erro, caso senha esteja incorreta
+                    throw new ArgumentException("Senha incorreta");
+                }
+            }
+            else
+            {
+                //Lançando erro caso usuário não exista
+                throw new ArgumentException("Usuário não existe");
+            }
+        }
 
         //Método para recuperar senha
         public async Task RecSenha(string email, BaixumDB db)
@@ -112,7 +135,7 @@ namespace to_do_mini_api.Services
             if (user != null)
             {
                 var novaSenha = user.Nome.Split(" ")[0] + "novaSenha";
-                //user.Password = BCrypt.Net.BCrypt.HashPassword(novaSenha);
+                user.Password = BCrypt.Net.BCrypt.HashPassword(novaSenha);
 
                 await this.AtualizarUsuario(user.Id, user, db);
 
