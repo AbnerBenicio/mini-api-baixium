@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Threading.Tasks;
 using to_do_mini_api.Model;
 
@@ -20,7 +21,7 @@ namespace to_do_mini_api.Services
             }
         }
 
-        public async Task<Tema> BuscarTema(BaixumDB db)
+        public async Task<List<Tema>> BuscarTema(BaixumDB db)
         {
              return await db.Temas.ToListAsync();
         }
