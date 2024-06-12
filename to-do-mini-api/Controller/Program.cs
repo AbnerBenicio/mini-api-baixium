@@ -1,15 +1,23 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using to_do_mini_api;
 using to_do_mini_api.Model;
 using to_do_mini_api.Services;
 
-
 var builder = WebApplication.CreateBuilder(args);
+
+// Adicionando o Identity ao serviço
+builder.Services.AddIdentity<Usuario, IdentityRole<Guid>>()
+                .AddEntityFrameworkStores<BaixumDB>();
+
+
+// Adicionando o serviço de autorização
+builder.Services.AddAuthorization();
 
 //Criando base de dados
 builder.Services.AddDbContext<BaixumDB>(options =>
 {
-    var connectionString = Environment.GetEnvironmentVariable("STRING_CONNECTION");
+    var connectionString = "Server=database-baixum.ccjww5dfpxwu.us-east-1.rds.amazonaws.com;Database=database_baixum;User ID=ArthurCremasco;Password=Bx!99-77;Trusted_Connection=False;TrustServerCertificate=True;";
     options.UseSqlServer(connectionString, options => options.EnableRetryOnFailure());
 });
 
@@ -30,6 +38,10 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+// Adicionando o middleware do Identity
+app.UseAuthentication();
+app.UseAuthorization();
+
 //Permitindo acesso à api
 app.UseCors(policy =>
     policy.WithOrigins("http://localhost:5173")
@@ -42,6 +54,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+
+// Authentication Mapgroup
+app.MapGroup("/identity").MapIdentityApi<IdentityUser>();
 //Criando grupo
 var baixiumItems = app.MapGroup("/baixium");
 
@@ -65,6 +80,22 @@ baixiumItems.MapGet("/usuarios", async (BaixumDB db) =>
     //Buscando usuários
     return Results.Ok(await UserService.BuscarUsuarios(db));
 });
+
+baixiumItems.MapPost("/register", async (Usuario model, UserManager<Usuario> userManager, SignInManager<Usuario> signInManager) =>
+{
+    var user = new Usuario { UserName = model.Email, Email = model.Email, Nome = model.Nome, Administrador = model.Administrador };
+    var result = await userManager.CreateAsync(user, model.PasswordHash);
+    if (result.Succeeded)
+    {
+        await signInManager.SignInAsync(user, isPersistent: false);
+        return Results.Ok(new { Message = "Usuário registrado com sucesso!" });
+    }
+    else
+    {
+        return Results.Problem("O registro falhou!");
+    }
+});
+
 
 //Endpoint Get (para usuário específico)
 baixiumItems.MapGet("/usuarios/{id}", async (Guid id, BaixumDB db) =>
@@ -97,24 +128,6 @@ baixiumItems.MapPost("/usuarios", async (Usuario user, BaixumDB db) =>
     } catch (Exception ex)
     {
         //Retornando erro
-        return Results.Problem(ex.Message);
-    }
-});
-
-//Endpoint para login
-baixiumItems.MapPost("/login", async (LoginRequest loginRequest, BaixumDB db) =>
-{
-    // Instanciando Classe de service
-    AplUsuario UserService = new AplUsuario();
-    try
-    {
-        // Utilizando service de login
-        Usuario user = await UserService.Login(loginRequest.Password, loginRequest.Email, db);
-        return Results.Ok(user);
-    }
-    catch (Exception ex)
-    {
-        // Retornando erro
         return Results.Problem(ex.Message);
     }
 });
