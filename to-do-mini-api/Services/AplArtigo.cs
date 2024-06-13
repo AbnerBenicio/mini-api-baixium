@@ -23,11 +23,19 @@ namespace to_do_mini_api.Services
                 artigo.Tema = temaExistente;
             }
 
-            // Adiciona o artigo ao banco de dados
-            db.Artigos.Add(artigo);
-            await db.SaveChangesAsync();
+            if (!string.IsNullOrWhiteSpace(artigo.Titulo) && !string.IsNullOrWhiteSpace(artigo.Conteudo))
+            {
+                // Adiciona o artigo ao banco de dados
+                db.Artigos.Add(artigo);
+                await db.SaveChangesAsync();
 
-            return artigo;
+                return artigo;
+            } else
+            {
+                throw new ArgumentException("Todos os campos devem ser preenchidos.");
+            }
+
+            
         }
 
         public async Task<Artigo> BuscarArtigos(BaixumDB db, Guid? id)
