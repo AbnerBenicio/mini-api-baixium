@@ -79,13 +79,24 @@ namespace to_do_mini_api.Services
 
             if (artigo != null)
             {
-                artigo.Titulo = inputArtigo.Titulo;
-                artigo.Conteudo = inputArtigo.Conteudo;
-                artigo.Validado = inputArtigo.Validado;
-                artigo.Autor = inputArtigo.Autor;
-                artigo.Tema = inputArtigo.Tema;
+                if (inputArtigo.Tema.Id != Guid.Empty && !string.IsNullOrEmpty(inputArtigo.Titulo) && !string.IsNullOrEmpty(inputArtigo.Conteudo))
+                {
+                    Usuario usuarioExistente = await db.Usuarios.FindAsync(inputArtigo.Autor.Id);
+                    Tema temaExistente = await db.Temas.FindAsync(inputArtigo.Tema.Id);
 
-                await db.SaveChangesAsync();
+                    artigo.Titulo = inputArtigo.Titulo;
+                    artigo.Conteudo = inputArtigo.Conteudo;
+                    artigo.Validado = inputArtigo.Validado;
+                    artigo.Autor = usuarioExistente;
+                    artigo.Tema = temaExistente;
+
+                    await db.SaveChangesAsync();
+                } else
+                {
+                    throw new ArgumentException("Informações inválidas");
+                }
+                
+
             }
             else
             {
