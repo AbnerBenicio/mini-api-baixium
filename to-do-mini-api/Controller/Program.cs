@@ -9,8 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 //Criando base de dados
 builder.Services.AddDbContext<BaixumDB>(options =>
 {
-    var connectionString = "Server=database-baixum.ccjww5dfpxwu.us-east-1.rds.amazonaws.com;Database=database_baixum;User ID=ArthurCremasco;Password=Bx!99-77;Trusted_Connection=False;TrustServerCertificate=True;";
-    //Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
+    var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
     options.UseSqlServer(connectionString, options => options.EnableRetryOnFailure());
 });
 
@@ -37,11 +36,9 @@ app.UseCors(policy =>
     .AllowAnyMethod()
     .AllowAnyHeader());
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+// Sempre use Swagger
+app.UseSwagger();
+app.UseSwaggerUI();
 
 //Criando grupo
 var baixiumItems = app.MapGroup("/baixium");
@@ -57,6 +54,7 @@ app.Use(async (context, next) =>
 
     await next();
 });
+
 
 //Endpoint Get (para todos os usuários)
 baixiumItems.MapGet("/usuarios", async (BaixumDB db) =>
