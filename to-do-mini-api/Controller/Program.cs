@@ -9,7 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 //Criando base de dados
 builder.Services.AddDbContext<BaixumDB>(options =>
 {
-    var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
+    var connectionString = "Server=database-baixum.ccjww5dfpxwu.us-east-1.rds.amazonaws.com;Database=database_baixum;User ID=ArthurCremasco;Password=Bx!99-77;Trusted_Connection=False;TrustServerCertificate=True;";
+    //Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
     options.UseSqlServer(connectionString, options => options.EnableRetryOnFailure());
 });
 
@@ -250,13 +251,19 @@ baixiumItems.MapDelete("/artigos/{id}", async (Guid id, BaixumDB db) =>
 
 baixiumItems.MapPost("/temas", async (Tema tema, BaixumDB db) =>
 {
-    db.Temas.Add(tema);
-    await db.SaveChangesAsync();
+    AplTemas temasService = new AplTemas();
+
+    tema = await temasService.PublicarTema(tema, db);
 
     return Results.Created($"/temas/{tema.Id}", tema);
 });
 
 baixiumItems.MapGet("/temas", async (BaixumDB db) =>
-    await db.Temas.ToListAsync());
+{
+    AplTemas temasService = new AplTemas();
+    var temas = await temasService.BuscarTema(db);
+    return temas;
+});
+
 
 await app.RunAsync();
