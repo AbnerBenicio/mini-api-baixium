@@ -19,22 +19,23 @@ builder.Services.AddEndpointsApiExplorer();
 //Habilitando uso do swagger
 builder.Services.AddSwaggerGen();
 
-//Habilitando acesso à api
+// Configure a política CORS para permitir origens específicas
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowMyOrigin",
-        builder => builder.WithOrigins("http://localhost:5173")
-                           .AllowAnyHeader()
-                           .AllowAnyMethod());
+    options.AddPolicy("AllowSpecificOrigins",
+        builder => builder.WithOrigins(
+            "http://localhost:5173",
+            "http://baixumapp.s3-website-us-east-1.amazonaws.com"
+        )
+        .AllowAnyHeader()
+        .AllowAnyMethod());
 });
 
 var app = builder.Build();
 
-//Permitindo acesso à api
-app.UseCors(policy =>
-    policy.WithOrigins("http://localhost:5173")
-    .AllowAnyMethod()
-    .AllowAnyHeader());
+// Permitindo acesso à API de qualquer origem
+app.UseCors("AllowSpecificOrigins");
+
 
 // Sempre use Swagger
 app.UseSwagger();
