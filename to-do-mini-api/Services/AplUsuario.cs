@@ -111,13 +111,15 @@ namespace to_do_mini_api.Services
                 //Verificando se senha é compatível
                 if (BCrypt.Net.BCrypt.Verify(password, user.Password))
                 {
+                    // Senha correta, permita o login
                     return user;
                 }
                 else
                 {
-                    //Lançando erro, caso senha esteja incorreta
+                    // Senha incorreta, lance uma exceção
                     throw new ArgumentException("Senha incorreta");
                 }
+
             }
             else
             {
@@ -131,15 +133,24 @@ namespace to_do_mini_api.Services
         {
             //Buscando usuário
             Usuario user = await db.Usuarios.FirstOrDefaultAsync(u => u.Email == email);
-             
+ 
             if (user != null)
             {
-                var novaSenha = user.Nome.Split(" ")[0] + "novaSenha";
-                user.Password = BCrypt.Net.BCrypt.HashPassword(novaSenha);
+                var novaSenha = user.Nome.Split(" ")[0] + "NovaSenha";
 
-                await this.AtualizarUsuario(user.Id, user, db);
+                var userInput = new Usuario
+                {
+                    Id = user.Id,
+                    Nome = user.Nome,
+                    Email = user.Email,
+                    Password = novaSenha,
+                    Administrador = user.Administrador
+                };
+                //user.Password = BCrypt.Net.BCrypt.HashPassword(novaSenha);
 
-                var apiKey = Environment.GetEnvironmentVariable("API_EMAIL"); //Criar variável de amente depois;
+                await this.AtualizarUsuario(user.Id, userInput, db);
+
+                var apiKey = Environment.GetEnvironmentVariable("API_EMAIL");
                 var client = new SendGridClient(apiKey);
                 var from = new EmailAddress("baixiumsuporte@gmail.com", "Baixium Suporte");
                 var to = new EmailAddress(user.Email);
