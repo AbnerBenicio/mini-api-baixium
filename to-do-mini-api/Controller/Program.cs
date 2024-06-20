@@ -22,10 +22,10 @@ builder.Services.AddSwaggerGen();
 // Configure a política CORS para permitir origens específicas
 builder.Services.AddCors(options =>
 {
+    var urlBaixium = Environment.GetEnvironmentVariable("URL_BAIXIUM");
     options.AddPolicy("AllowSpecificOrigins",
         builder => builder.WithOrigins(
-            "http://localhost:5173",
-            "https://d23hz7ns35ksts.cloudfront.net/"
+            urlBaixium
         )
         .AllowAnyHeader()
         .AllowAnyMethod());
