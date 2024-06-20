@@ -19,20 +19,22 @@ builder.Services.AddEndpointsApiExplorer();
 //Habilitando uso do swagger
 builder.Services.AddSwaggerGen();
 
-// Configure a política CORS para permitir qualquer origem
+// Configure a política CORS para permitir origens específicas
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAnyOrigin",
-        builder => builder.AllowAnyOrigin()
-                          .AllowAnyHeader()
-                          .AllowAnyMethod());
+    options.AddPolicy("AllowSpecificOrigins",
+        builder => builder.WithOrigins(
+            "http://localhost:5173",
+            "https://d23hz7ns35ksts.cloudfront.net/"
+        )
+        .AllowAnyHeader()
+        .AllowAnyMethod());
 });
 
 var app = builder.Build();
 
 // Permitindo acesso à API de qualquer origem
-app.UseCors("AllowAnyOrigin");
-
+app.UseCors("AllowSpecificOrigins");
 
 
 // Sempre use Swagger
