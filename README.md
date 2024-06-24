@@ -63,3 +63,4 @@ Para rodar o repositório é necessário:
 * clonar este repositório;
 * Abrir solução (arquivo .snl) em uma IDE de sua preferência. (Sugestão: Visual Studio 2022);
 * Compilar e executar programa.
+* Obs: O projeto utiliza variáveis de ambiente para a conexão com o banco de dados e com o serviço de email. Para testes mais precisos no seu ambiente de desenvolvimento, necessário criar variáveis de ambiente locais e criar sua base de dados e gerar a API para serviços de email.
