@@ -8,10 +8,10 @@
 ## :memo: Descrição
 O Baixum é um projeto desenvolvido para a disciplina de Desenvolvimento Web, do curso Sistemas de Informação, do IFES Campus Serra. Se trata de uma aplicação web que permite aos usuários publicar artigos e e ver artigos que foram publicados pela comunidade da platafoma. Além disso, o sistema também permite que administradores avaliem os artigos, permitindo ou não que eles sejam publicados para toda a comunidade. 
 
-## :department_store: Link para a API
-O sistema se comunica com uma API construída em C#, utilizando os frameworks .NET(dotnet) e Entity.<br>
-Segue link de acesso para a API:<br>
-<a href="https://github.com/AbnerBenicio/mini-api-baixium/">LINK PARA API</a>
+## :department_store: Link para o Front End
+A API se comunica com o Front End desenvolvido em JavaScript, utilizando o framework React<br>
+Segue link de acesso para o Front End:<br>
+<a href="https://github.com/abnerbenicio/baixum">LINK PARA API</a>
 
 ## :handshake: Colaboradores
 <table>
@@ -48,31 +48,18 @@ Segue link de acesso para a API:<br>
 </table>
 
 ## :link: Links
-* :computer: <a href="http://baixumapp.s3-website-us-east-1.amazonaws.com">Link de acesso à web</a><br>
+* :computer: <a href="http://3.80.111.17:8080/">Link de acesso à web da API</a><br>
 * :book: <a href="https://docs.google.com/document/d/1tkc91ZLwE62-VggW-cInRVQXvMa-c_Ik3CZhFk3-z1g/edit?usp=sharing">Link para documento de análise</a> e <a href="https://docs.google.com/document/d/1B5MIEB58U2BD5B139OKZn5lCaUFf_Hne/edit?usp=sharing">Link para documento de projeto</a><br>
 
 ## :wrench: Tecnologias utilizadas
-* React.js;
+* .NET(dotnet);
 * AWS;
-* Bootstrap;
-* Axios;
+* SQL Server;
+* Entity Framework;
 * SonarCloud
 
 ## :rocket: Rodando o projeto
-Antes de Rodar o projeto nesse repositório, antes, é necessário rodar a API que está <a href="https://github.com/AbnerBenicio/mini-api-baixium/">aqui</a>.<br>
-Para rodar o repositório é necessário clonar o mesmo e dar os seguintes comandos no terminal para iniciar o projeto:
-```
-npm install
-```
-```
-npm install bootstrap
-```
-```
-npm run dev
-```
-* Conta de administrador para testes:
- - Usuário: filipemoura@gmail.com
- - Senha: germancano
-
-## :video_camera: Uso do aplicativo
-<a href="https://youtu.be/i6tEAHpXq8k">Vídeo demonstrando uso da aplicação</a>
+Para rodar o repositório é necessário:
+* clonar este repositório;
+* Abrir solução (arquivo .snl) em uma IDE de sua preferência. (Sugestão: Visual Studio 2022);
+* Compilar e executar programa.
