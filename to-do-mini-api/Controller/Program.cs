@@ -23,12 +23,23 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddCors(options =>
 {
     var urlBaixium = Environment.GetEnvironmentVariable("URL_BAIXIUM");
-    options.AddPolicy("AllowSpecificOrigins",
+    if (urlBaixium != null)
+    {
+        options.AddPolicy("AllowSpecificOrigins",
         builder => builder.WithOrigins(
             urlBaixium
         )
         .AllowAnyHeader()
         .AllowAnyMethod());
+    } else
+    {
+        options.AddPolicy("AllowSpecificOrigins",
+        builder => builder.WithOrigins(
+            "http://localhost:5173"
+        )
+        .AllowAnyHeader()
+        .AllowAnyMethod());
+    }
 });
 
 var app = builder.Build();

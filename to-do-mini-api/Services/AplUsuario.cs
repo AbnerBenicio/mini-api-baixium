@@ -7,6 +7,7 @@ namespace to_do_mini_api.Services
 {
     public class AplUsuario
     {
+        private const string UsuarioNaoExiste = "Usuário não existe";
         //Método para cadastro de usuário
         public async Task<Usuario> CadastrarUsuario(Usuario user, BaixumDB db)
         {
@@ -58,7 +59,7 @@ namespace to_do_mini_api.Services
             } else
             {
                 //Lançando erro, caso usuário não exista
-                throw new ArgumentException("Usuário não existe");
+                throw new ArgumentException(UsuarioNaoExiste);
             }
              
         }
@@ -97,7 +98,7 @@ namespace to_do_mini_api.Services
             } else
             {
                 //Lançando erro, caso usuário não exista
-                throw new ArgumentException("Usuário não existe");
+                throw new ArgumentException(UsuarioNaoExiste);
             }   
         }
 
@@ -124,7 +125,7 @@ namespace to_do_mini_api.Services
             else
             {
                 //Lançando erro caso usuário não exista
-                throw new ArgumentException("Usuário não existe");
+                throw new ArgumentException(UsuarioNaoExiste);
             }
         }
 
@@ -146,7 +147,6 @@ namespace to_do_mini_api.Services
                     Password = novaSenha,
                     Administrador = user.Administrador
                 };
-                //user.Password = BCrypt.Net.BCrypt.HashPassword(novaSenha);
 
                 await this.AtualizarUsuario(user.Id, userInput, db);
 
@@ -158,12 +158,12 @@ namespace to_do_mini_api.Services
                 var plainTextContent = "Olá, " + user.Nome + "!\nVimos que você esqueceu a sua senha.\nSua senha provisória é: " + novaSenha + "\nPedimos para que troque a sua senha o mais rápido possível.";
                 var htmlContent = "<p>Olá, " + user.Nome + "!<br>Vimos que você esqueceu a sua senha.<br>Sua senha provisória é: " + novaSenha + "<br>Pedimos para que troque a sua senha o mais rápido possível. </p>";
                 var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-                var response = await client.SendEmailAsync(msg);
+                await client.SendEmailAsync(msg);
             }
             else
             {
                 //Lançando erro, caso usuário não exista
-                throw new ArgumentException("Usuário não existe");
+                throw new ArgumentException(UsuarioNaoExiste);
             }
 
         }
